@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>通用金 · 转出至微信提示</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      min-height: 100vh;
+      background: #e6e2dc;
+      color: #333;
+      font-family: "PingFang SC", "Hiragino Sans GB", "Noto Sans SC", "Microsoft YaHei", sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 28px;
+      padding: 28px 16px 48px;
+    }
+    .note {
+      width: min(390px, 100%);
+      color: #3a342c;
+      order: 2;
+    }
+    @media (min-width: 980px) {
+      body {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 56px;
+        padding: 40px 32px;
+      }
+      .note { order: 0; width: 280px; }
+    }
+    .note .kicker {
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      color: #8a8178;
+      margin-bottom: 10px;
+    }
+    .note h1 {
+      font-size: 22px;
+      font-weight: 600;
+      line-height: 1.45;
+      margin-bottom: 18px;
+      color: #e23b32;
+    }
+    .note p {
+      font-size: 14px;
+      line-height: 1.7;
+      color: #5c564e;
+      margin-bottom: 10px;
+    }
+    .phone {
+      width: 390px;
+      height: 844px;
+      background: #f3f3f3;
+      border-radius: 36px;
+      overflow: hidden;
+      position: relative;
+      box-shadow: 0 24px 60px rgba(60, 40, 20, 0.18);
+      flex: none;
+    }
+    .hero {
+      background: linear-gradient(180deg, #ffd2ae 0%, #ffe0c4 42%, #f6e4d8 78%, #f3f3f3 100%);
+      padding: 0 16px 8px;
+    }
+    .status {
+      height: 48px;
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-between;
+      padding: 0 8px 6px 12px;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1c1c1e;
+    }
+    .status-icons {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .nav {
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+    .nav-back {
+      display: flex;
+      align-items: center;
+      gap: 2px;
+      font-size: 17px;
+      font-weight: 500;
+      color: #1c1c1e;
+    }
+    .nav-back svg { display: block; }
+    .nav-right {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .icon-btn {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.55);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .capsule {
+      height: 32px;
+      padding: 0 10px 0 12px;
+      border-radius: 16px;
+      background: rgba(255, 255, 255, 0.72);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+    .capsule .split {
+      width: 1px;
+      height: 14px;
+      background: rgba(0, 0, 0, 0.12);
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 6px 4px 14px;
+      font-size: 15px;
+      color: #3a2a22;
+    }
+    .brand b { font-weight: 650; color: #2a211c; }
+    .brand .sep { color: #e0b8a4; font-weight: 300; margin: 0 1px; }
+    .brand .sub { color: #5e463c; font-weight: 400; }
+    .logo {
+      width: 20px;
+      height: 20px;
+      flex: none;
+      display: block;
+    }
+    .card-wrap {
+      position: relative;
+      margin: 0 0 4px;
+    }
+    .card {
+      height: 128px;
+      border-radius: 18px;
+      background: linear-gradient(165deg, #e86a3c 0%, #ed7544 42%, #f19763 100%);
+      box-shadow: 0 16px 28px rgba(226, 112, 48, 0.28);
+      padding: 22px 22px 18px;
+      color: #fff;
+      position: relative;
+    }
+    .card-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 14px;
+      opacity: 0.95;
+    }
+    .card-label .info {
+      width: 14px;
+      height: 14px;
+      border: 1.2px solid rgba(255, 255, 255, 0.85);
+      border-radius: 50%;
+      font-size: 10px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+    .card-num {
+      margin-top: 8px;
+      font-size: 52px;
+      line-height: 1;
+      font-weight: 620;
+      letter-spacing: 0.5px;
+    }
+    .coin {
+      position: absolute;
+      right: -2px;
+      top: -40px;
+      width: 128px;
+      height: 128px;
+      z-index: 2;
+      filter: drop-shadow(0 10px 8px rgba(180, 100, 20, 0.22));
+    }
+    .body {
+      padding: 12px 16px 0;
+    }
+    .panel {
+      background: #fff;
+      border-radius: 16px;
+      margin-bottom: 12px;
+    }
+    .transfer {
+      height: 108px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: center;
+      padding-left: 22px;
+      gap: 10px;
+    }
+    .yen {
+      width: 46px;
+      height: 36px;
+      display: block;
+    }
+    .transfer span {
+      font-size: 14px;
+      color: #333;
+      margin-left: 6px;
+    }
+    .list { padding: 18px 16px 8px; }
+    .list-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 8px;
+    }
+    .list-head h2 {
+      font-size: 16px;
+      font-weight: 650;
+      color: #222;
+    }
+    .list-head .all {
+      font-size: 13px;
+      color: #c0c0c0;
+    }
+    .row {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 0 13px;
+    }
+    .name {
+      font-size: 16px;
+      color: #333;
+      font-weight: 500;
+      line-height: 1.3;
+    }
+    .hint {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #e23b32;
+      line-height: 1.3;
+    }
+    .time {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #c4c4c4;
+      line-height: 1.3;
+    }
+    .right {
+      text-align: right;
+      flex: none;
+    }
+    .amt {
+      font-size: 16px;
+      font-weight: 500;
+      color: #222;
+      font-variant-numeric: tabular-nums;
+      line-height: 1.3;
+    }
+    .amt.plus { color: #e25d3a; }
+    .remain {
+      margin-top: 4px;
+      font-size: 12px;
+      color: #c4c4c4;
+      line-height: 1.3;
+    }
+    .clip {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      height: 36px;
+      background: linear-gradient(180deg, rgba(255,255,255,0), #fff 70%);
+    }
+  </style>
+</head>
+<body>
+  <aside class="note">
+    <div class="kicker">额度变动明细 · 新增一行</div>
+    <h1>*请在点击红包后领取</h1>
+    <p>只加在「转出至微信」上。红色小字，前面带 *，和「*支持转出方式：微信」一样。</p>
+  </aside>
+
+  <div class="phone">
+    <div class="hero">
+      <div class="status">
+        <span>10:59</span>
+        <div class="status-icons">
+          <svg width="17" height="12" viewBox="0 0 17 12" fill="none" aria-hidden="true">
+            <rect x="0" y="7" width="3" height="5" rx="0.6" fill="#1c1c1e"/>
+            <rect x="4.5" y="5" width="3" height="7" rx="0.6" fill="#1c1c1e"/>
+            <rect x="9" y="2.5" width="3" height="9.5" rx="0.6" fill="#1c1c1e"/>
+            <rect x="13.5" y="0" width="3" height="12" rx="0.6" fill="#1c1c1e"/>
+          </svg>
+          <svg width="16" height="12" viewBox="0 0 16 12" fill="none" aria-hidden="true">
+            <path d="M8 3.2c1.7 0 3.2.7 4.3 1.8l1-1.1A7.4 7.4 0 0 0 8 1.6 7.4 7.4 0 0 0 2.7 3.9l1 1.1A6 6 0 0 1 8 3.2Z" fill="#1c1c1e"/>
+            <path d="M8 6.2c.9 0 1.7.4 2.3 1l1-1.1A4.6 4.6 0 0 0 8 4.6c-1.2 0-2.3.5-3.1 1.3l1 1.1c.5-.6 1.3-1 2.1-1Z" fill="#1c1c1e"/>
+            <circle cx="8" cy="10" r="1.3" fill="#1c1c1e"/>
+          </svg>
+          <svg width="25" height="12" viewBox="0 0 25 12" fill="none" aria-hidden="true">
+            <rect x="0.6" y="0.6" width="21" height="10.8" rx="2.2" stroke="#1c1c1e" stroke-width="1"/>
+            <rect x="2" y="2" width="16" height="8" rx="1" fill="#1c1c1e"/>
+            <path d="M23 4.2v3.6c.7-.3 1.2-1 1.2-1.8S23.7 4.5 23 4.2Z" fill="#1c1c1e"/>
+          </svg>
+        </div>
+      </div>
+      <div class="nav">
+        <div class="nav-back">
+          <svg width="12" height="20" viewBox="0 0 12 20" fill="none" aria-hidden="true">
+            <path d="M10 2 L2 10 L10 18" stroke="#1c1c1e" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          通用金
+        </div>
+        <div class="nav-right">
+          <div class="icon-btn" aria-hidden="true">
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <path d="M8 1.6l1.7 3.6 3.9.5-2.9 2.7.7 3.9L8 10.4 4.6 12.3l.7-3.9L2.4 5.7l3.9-.5L8 1.6Z" stroke="#1c1c1e" stroke-width="1.2" stroke-linejoin="round"/>
+            </svg>
+          </div>
+          <div class="capsule" aria-hidden="true">
+            <svg width="16" height="4" viewBox="0 0 16 4">
+              <circle cx="2" cy="2" r="1.4" fill="#1c1c1e"/>
+              <circle cx="8" cy="2" r="1.4" fill="#1c1c1e"/>
+              <circle cx="14" cy="2" r="1.4" fill="#1c1c1e"/>
+            </svg>
+            <div class="split"></div>
+            <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+              <circle cx="8" cy="8" r="5.2" stroke="#1c1c1e" stroke-width="1.3"/>
+              <circle cx="8" cy="8" r="2" fill="#1c1c1e"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <div class="brand">
+        <svg class="logo" viewBox="0 0 24 24" aria-hidden="true">
+          <circle cx="12" cy="12" r="11" fill="#c44716"/>
+          <circle cx="12" cy="12" r="7.2" fill="none" stroke="#9a320c" stroke-width="1.4"/>
+          <path d="M12 6.4l3.6 4.4c.5.7.5 1.6 0 2.3L12 17.6l-3.6-4.5c-.5-.7-.5-1.6 0-2.3L12 6.4z" fill="#fff"/>
+        </svg>
+        <b>通用金</b>
+        <span class="sep">|</span>
+        <span class="sub">您的专属积分</span>
+      </div>
+      <div class="card-wrap">
+        <div class="card">
+          <div class="card-label">
+            可用额度
+            <span class="info">i</span>
+            提取说明
+          </div>
+          <div class="card-num">1.00</div>
+        </div>
+        <svg class="coin" viewBox="0 0 140 140" aria-hidden="true">
+          <defs>
+            <radialGradient id="rim" cx="32%" cy="28%" r="78%">
+              <stop offset="0%" stop-color="#ffe9a2"/>
+              <stop offset="38%" stop-color="#f5c247"/>
+              <stop offset="72%" stop-color="#e6a31c"/>
+              <stop offset="100%" stop-color="#c88812"/>
+            </radialGradient>
+            <radialGradient id="face" cx="40%" cy="36%" r="68%">
+              <stop offset="0%" stop-color="#ffe07a"/>
+              <stop offset="100%" stop-color="#f0b42e"/>
+            </radialGradient>
+          </defs>
+          <ellipse cx="74" cy="122" rx="34" ry="7" fill="#c47a28" opacity="0.28"/>
+          <g transform="rotate(-16 70 68)">
+            <circle cx="70" cy="68" r="50" fill="url(#rim)"/>
+            <circle cx="70" cy="68" r="42" fill="none" stroke="#a87410" stroke-width="2" opacity="0.35"/>
+            <circle cx="70" cy="70" r="38" fill="url(#face)"/>
+            <circle cx="70" cy="70" r="36" fill="none" stroke="#fff4cc" stroke-width="1.6" opacity="0.65"/>
+            <path d="M70 54 L84 70 L70 86 L56 70 Z" fill="#e2ae34"/>
+            <path d="M70 54 L84 70 L70 68 Z" fill="#fff1c2"/>
+            <path d="M70 54 L56 70 L70 68 Z" fill="#f6d56e"/>
+            <path d="M56 70 L70 86 L70 68 Z" fill="#c89022"/>
+            <path d="M84 70 L70 86 L70 68 Z" fill="#e0b044"/>
+            <ellipse cx="58" cy="60" rx="14" ry="7" fill="#fff" opacity="0.38"/>
+          </g>
+        </svg>
+      </div>
+    </div>
+
+    <div class="body">
+      <div class="panel transfer">
+        <svg class="yen" viewBox="0 0 52 40" aria-hidden="true">
+          <rect x="1" y="3" width="34" height="34" rx="9" fill="#ef5648"/>
+          <path d="M11 12.5 L18.2 22.2 V30.2 M25.6 12.5 L18.2 22.2 M12.2 23.2 H24.2 M12.2 27.2 H24.2" fill="none" stroke="#fff" stroke-width="2.15" stroke-linecap="round" stroke-linejoin="round"/>
+          <path d="M24 16.2h8v-3.4L42 20l-10 7.2v-3.4h-8z" fill="#f8b7b1"/>
+        </svg>
+        <span>转出</span>
+      </div>
+
+      <div class="panel list">
+        <div class="list-head">
+          <h2>额度变动明细</h2>
+          <div class="all">全部 ›</div>
+        </div>
+
+        <div class="row">
+          <div>
+            <div class="name">转出至微信</div>
+            <div class="hint">*请在点击红包后领取</div>
+            <div class="time">2026-09-22 12:37:11</div>
+          </div>
+          <div class="right">
+            <div class="amt">-2.00</div>
+            <div class="remain">剩余 1.00</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <div class="name">平台充值</div>
+            <div class="hint">*支持转出方式：微信</div>
+            <div class="time">2026-09-22 12:31:02</div>
+          </div>
+          <div class="right">
+            <div class="amt plus">+2.00</div>
+            <div class="remain">剩余 3.00</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <div class="name">转出至微信</div>
+            <div class="hint">*请在点击红包后领取</div>
+            <div class="time">2026-09-22 12:29:07</div>
+          </div>
+          <div class="right">
+            <div class="amt">-2.00</div>
+            <div class="remain">剩余 1.00</div>
+          </div>
+        </div>
+
+        <div class="row">
+          <div>
+            <div class="name">平台充值</div>
+          </div>
+          <div class="right">
+            <div class="amt plus">+2.00</div>
+          </div>
+        </div>
+        <div class="clip"></div>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
